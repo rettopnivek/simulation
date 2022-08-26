@@ -2,9 +2,12 @@
 % Please edit documentation in R/R02-distribution_functions.R
 \name{sim.gaussian}
 \alias{sim.gaussian}
+\alias{sim.normal}
 \title{Simulate From a Gaussian Distribution}
 \usage{
 sim.gaussian(mu, sigma)
+
+sim.normal(mu, sigma)
 }
 \arguments{
 \item{mu}{A vector of location parameters, the distribution

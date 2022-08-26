@@ -3,43 +3,27 @@
 # email: kevin.w.potter@gmail.com
 # Please email me directly if you
 # have any questions or comments
-# Last updated 2022-08-12
+# Last updated 2022-08-21
 
 # Table of contents
-# 1) each
-# 2) `%j%`
-# 3) pse
-# 4) groups
-# 5) intercept
-# 6) get_X
+# 1) Operators
+#   1.1) `%j%`
+# 2) Functions to duplicate values
+#   2.1) each
+#   1.2) zeros
+#   2.3) ones
+# 3) Functions to generate data frames and columns
+#   3.1) pse
+#   3.2) groups
+#   3.3) intercept
+#   3.4) coding
+# 4) Functions to extract and manipulate columns
+#   4.1) get_X
+#   4.2) z_score
 
-#### 1) each ####
-#' Repeat Each Element in a Vector
-#'
-#' Convenience function that repeats
-#' each element in a vector a fixed
-#' number of times.
-#'
-#' @param x A vector of elements.
-#' @param times The number of times
-#'   to repeat each element.
-#'
-#' @returns A vector of repeated elements.
-#'
-#' @examples
-#'
-#' each( 1:3, 2 )
-#' each( LETTERS[1:3], 3 )
-#'
-#' @export
+#### 1) Operators ####
 
-each <- function( x, times ) {
-
-  return( rep( x, each = times ) )
-
-}
-
-#### 2) `%j%` ####
+#### 1.1) `%j%` ####
 #' Operator to Join a Vector to a Data Frame
 #'
 #' An operator that takes a data frame and a
@@ -131,7 +115,103 @@ each <- function( x, times ) {
 }
 
 
-#### 3) pse ####
+#### 2) Functions to duplicate values ####
+
+#### 2.1) each ####
+#' Repeat Each Element in a Vector
+#'
+#' Convenience function that repeats
+#' each element in a vector a fixed
+#' number of times.
+#'
+#' @param x A vector of elements.
+#' @param times The number of times
+#'   to repeat each element.
+#'
+#' @returns A vector of repeated elements.
+#'
+#' @examples
+#'
+#' each( 1:3, 2 )
+#' each( LETTERS[1:3], 3 )
+#'
+#' @export
+
+each <- function( x, times ) {
+
+  return( rep( x, each = times ) )
+
+}
+
+#### 1.2) zeros ####
+#' Create Vector of Zeros
+#'
+#' Convenience function that generates
+#' a vector or matrix of zeros.
+#'
+#' @param N Number of elements or rows.
+#' @param K Number of columns if output
+#'   should be a matrix.
+#'
+#' @returns Either a vector or matrix of zeros.
+#'
+#' @examples
+#'
+#' zeros( 3 )
+#' zeros( 3, 2 )
+#'
+#' @export
+
+zeros <- function( N, K = NULL ) {
+
+  if ( is.null( K ) ) {
+
+    return( rep( 0, N ) )
+
+  } else {
+
+    return( matrix( 0, N, K ) )
+
+  }
+
+}
+
+#### 2.3) ones ####
+#' Create Vector of Ones
+#'
+#' Convenience function that generates
+#' a vector or matrix of ones
+#'
+#' @param N Number of elements or rows.
+#' @param K Number of columns if output
+#'   should be a matrix.
+#'
+#' @returns Either a vector or matrix of ones
+#'
+#' @examples
+#'
+#' ones( 3 )
+#' ones( 3, 2 )
+#'
+#' @export
+
+ones <- function( N ) {
+
+  if ( is.null( K ) ) {
+
+    return( rep( 1, N ) )
+
+  } else {
+
+    return( matrix( 1, N, K ) )
+
+  }
+
+}
+
+#### 3) Functions to generate data frames and columns ####
+
+#### 3.1) pse ####
 #' Initialize Data Set for Persons x Sessions x Events
 #'
 #' Generates a data frame with 3 columns for (1) persons
@@ -190,7 +270,7 @@ pse <- function( Np, Ns = 1, Ne = 1, labels = NULL ) {
   return( out )
 }
 
-#### 4) groups ####
+#### 3.2) groups ####
 #' Split Index Variable into Groups
 #'
 #' Splits a index vector into separate groups.
@@ -247,8 +327,7 @@ groups <- function( index, multiple, values, label = NULL ) {
   return( out )
 }
 
-
-#### 5) intercept ####
+#### 3.3) intercept ####
 #' Create Intercept Column for Design Matrix
 #'
 #' Convenience function to create inputs
@@ -280,7 +359,150 @@ intercept <- function( N, label = 'X.Intercept' ) {
 
 }
 
-#### 6) get_X ####
+#### 3.4) coding ####
+#' Recode a Variable Based on Matches
+#'
+#' Function that recodes a variable (e.g.,
+#' assigning 0 and 1 to create a dummy-coded
+#' variable based on matches).
+#'
+#' @param x A vector of values.
+#' @param to_match Either (a) a vector of values or
+#'   (b) a list of vectors, the elements in \code{x}
+#'   to match when assigning codes.
+#' @param codes The new values or codes to assign based
+#'   on the matches between \code{x} and \code{to_match}.
+#'   If \code{codes == NULL} then if assigns codes of (a)
+#'   0 and 1 for two levels of \code{x}, or (b) codes of
+#'   -1, 0, and 1 for three levels of \code{x}.
+#' @param label An optional character string, the label
+#'   for the column to add to a data frame (allows the
+#'   output from the function to be passed to the
+#'   \code{%j%} operator).
+#'
+#' @returns A vector of new values. If \code{label} is
+#' specified, returns a list with the vector of new
+#' values and the label for the column to add to a data
+#' frame.
+#'
+#' @examples
+#'
+#' # Define a vector of values
+#' x <- rep( 1:4, each = 2 )
+#'
+#' # Create a dummy-coded variable (0 or 1)
+#' coding( x, 3:4 )
+#' # Create an effects-coded variable (-1, 0, 1)
+#' coding( x, list( 1, 2:3, 4 ) )
+#' # Custom codes (alternative variant of effects coding)
+#' coding( x, list( 1:2, 3:4 ), c( -.5, .5 ) )
+#'
+#' # How to add a new column to a data frame using %j%
+#' dtf <- data.frame( Index = x )
+#' dtf <- dtf %j%
+#'   coding( dtf$Index, 3:4, label = 'X.1' )
+#' print( dtf )
+#'
+#' @export
+
+coding <- function( x, to_match, codes = NULL, label = NULL ) {
+
+  # Number of options
+  N <- length( x )
+
+  # Initialize output
+  out <- rep( NA, N )
+
+  # Determine structure of values to match over
+  is_list <- is.list( to_match )
+
+  # If a list of values is provided
+  if ( is_list ) {
+
+    # Number of sets to match over
+    L <- length( to_match )
+
+    # If no user-defined codes are provided
+    if ( is.null( codes ) ) {
+
+      if ( L == 2 ) {
+        codes <- 0:1
+      }
+      if ( L == 3 ) {
+        codes <- c( -1, 0, 1 )
+      }
+
+      # Close 'If no user-defined codes are provided'
+    }
+
+    N_codes <- length( codes )
+
+    # If all codes and matching sets specified
+    if ( N_codes == L ) {
+
+      # Loop over matching sets
+      for ( l in 1:L ) {
+
+        matches <- x %in% to_match[[l]]
+
+        out[ matches ] <- codes[l]
+
+        # Close 'Loop over matching sets'
+      }
+
+      # Close 'If all codes and matching sets specified'
+    }
+
+    # If all non-zero codes and matching sets provided
+    if ( (N_codes - 1) == L ) {
+
+      # Vector of zeros
+      out <- zeros( N )
+
+      # Loop over matching sets
+      for ( l in 1:L ) {
+
+        matches <- x %in% to_match[[l]]
+
+        out[ matches ] <- codes[l]
+
+        # Close 'Loop over matching sets'
+      }
+
+      # Close 'If all non-zero codes and matching sets provided'
+    }
+
+    # Close 'If a list of values is provided'
+  } else {
+
+    matches <- x %in% to_match
+
+    if ( is.null( codes ) ) {
+      codes <- 0:1
+    }
+
+    out[ !matches ] <- codes[1]
+    out[ matches ] <- codes[2]
+
+    # Close else for 'If a list of values is provided'
+  }
+
+  if ( all( is.na( out ) ) ) {
+    stop( 'FORTHCOMING')
+  }
+
+  if ( !is.null( label ) ) {
+
+    return( list( out, label ) )
+
+  }
+
+  return( out )
+}
+
+#### 4) Functions to extract and manipulate columns ####
+
+#### 4.1) get_X ####
 #' Extract Design Matrix
 #'
 #' Extracts the columns for the design matrix
@@ -312,5 +534,46 @@ get_X <- function( dtf, tag = 'X.' ) {
   i <- grepl( tag, colnames(dtf), fixed = TRUE )
 
   return( dtf[,i] )
+}
+
+#### 4.2) z_score ####
+#' Compute Z-scores
+#'
+#' Convenience function that converts a
+#' vector of values into a set of
+#' z-scores (mean of 0 and SD of 1).
+#'
+#' @param values A vector of numeric values.
+#' @param m An optional numeric value, the mean
+#'   to use when computing the z-scores.
+#' @param s An optional numeric value, the
+#'   standard deviation to use when computing
+#'   the z-scores.
+#'
+#' @returns A vector of z-scores.
+#'
+#' @examples
+#'
+#' # For reproducibility
+#' set.seed( 111 )
+#' # Simulate values with M = 100, SD = 15
+#' x <- rnorm( 5, 100, 15 )
+#' # Convert to z-scores
+#' z <- z_score( x, m = 100, s = 15 )
+#'
+#' @export
+
+z_score <- function( values, m = NULL, s = NULL ) {
+
+  if ( is.null(m) ) {
+    m <- mean(values, na.rm = TRUE)
+  }
+  if ( is.null(s) ) {
+    s <- sd(values, na.rm = TRUE)
+  }
+
+  z <- (values - m)/s
+
+  return(z)
 }
 

@@ -4,7 +4,7 @@
 \alias{transformation}
 \title{Transform a Vector of Values}
 \usage{
-transformation(values, type, inverse = FALSE)
+transformation(values, type = "identity", inverse = FALSE, parameters = NULL)
 }
 \arguments{
 \item{values}{A vector of numeric values.}
@@ -16,6 +16,7 @@ transformation function to use, either...
 \item The \code{'exponential'} function;
 \item The \code{'logistic'} function.
 \item The \code{'logit'} function.
+\item The \code{'linear'} function.
 }}
 
 \item{inverse}{Logical; if \code{TRUE}
@@ -36,23 +37,28 @@ implement link functions for a variety of
 statistical models.
 }
 \section{Identity function}{
-Implements the function \deqn{ f(x) = x } or
-\deqn{ f^{-1}(y) = y. }.
+Implements the function \eqn{ f(x) = x } or
+\eqn{ f^{-1}(y) = y. }.
 }
 
 \section{Exponential function}{
-Implements the function \deqn{ f(x) = e^x } or
-\deqn{ f^{-1}(y) = log(y). }.
+Implements the function \eqn{ f(x) = e^x } or
+\eqn{ f^{-1}(y) = log(y). }.
 }
 
 \section{Logistic function}{
-Implements the function \deqn{ f(x) = frac{1}{1 + e^{-x}} } or
-\deqn{ f^{-1}(y) = log( y / (1-y) ). }.
+Implements the function \eqn{ f(x) = \frac{1}{1 + e^{-x}} } or
+\eqn{ f^{-1}(y) = log( y / (1-y) ). }.
 }
 
 \section{Logit function}{
-Implements the function \deqn{ f(x) = log( x / (1-x) ) } or
-\deqn{ f^{-1}(y) = frac{1}{1 + e^{-y}}. }.
+Implements the function \eqn{ f(x) = log( x / (1-x) ) } or
+\eqn{ f^{-1}(y) = \frac{1}{1 + e^{-y}}. }.
+}
+
+\section{Linear function}{
+Implements the function \eqn{ f(x) = a + b(x) } or
+\eqn{ f^{-1}(y) = \frac{y - a}{b}. }.
 }
 
 \examples{
@@ -64,5 +70,11 @@ round( transformation(  0.300, type = 'exponential', inverse = TRUE ), 3 )
 # Logistic function
 transformation( 0.0, type = 'logistic' )
 transformation( 0.5, type = 'logistic', inverse = TRUE )
+
+# Linear function
+transformation( 115, type = 'linear', parameters = c(-100/15, 1/15) )
+transformation(
+  -1, type = 'linear', parameters = c(-100/15, 1/15), inverse = TRUE
+)
 
 }

@@ -1,0 +1,113 @@
+---
+title: "Tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>"
+)
+```
+
+```{r setup}
+library(simulation)
+```
+
+## Table of contents
+  
+FORTHCOMING
+
+## 1) Introduction
+
+For many experimental and clinical psychology studies, data are often collected over (a) people, (b) sessions, and (c) events within a session.
+
+For example, consider a study that has 100 participants come in for 2 visits (one in which they receive an active drug and the other in which they receive a placebo). During the visits participants complete a cognitive task once prior to dosing and twice following dosing. This study is an example of a complete person x session x event design (100 participants x 2 visit x 3 repetitions of the cognitive task). We can quickly generate data for designs like this using the `pse` function:
+
+```{r}
+Np = 100 # Number of people
+Ns = 2 # Number of sessions
+Ne = 3 # Number of events
+
+sim <- pse( Np, Nv, Ne ) 
+
+sim |> head() |> print()
+```
+
+We can then create a design matrix via the function `coding` and the `%j%` operator:
+
+```{r}
+sim <- sim %j% 
+  # Shorthand for creating an intercept column
+  intercept( nrow(sim) ) %j% 
+  # Dummy-coded variable for placebo vs. active drug
+  coding( sim$Index.Sessions, 2, 'X.Active_drug' ) %j% 
+  # Dummy-coded variable for pre vs. post-dose events
+  coding( sim$Index.Events, 2:3, 'X.Post_dose' )
+
+sim |> head() |> print()
+```
+
+## 2) Examples
+
+### 2.1) Simple linear regression
+
+### 2.1) Continuous predictor
+
+FORTHCOMING.
+
+```{r}
+# Create data frame for simulated data
+Np <- 100
+sim <- pse( Np )
+sim <-
+  sim %j% intercept( Np ) %j%
+  list( sim.gaussian( zeros( Np ), 1 ), 'X.1' )
+
+# Define parameters for simulation
+
+# Intercept and correlation
+betas <- c( 0, .4 )
+# Determine residual standard deviation
+sigmas <- calc.sigma(
+  c( beta_1 = betas[2], var_x = 1, R2 = betas[2]^2 ), 'residual'
+)
+
+# Simulate data from outcome
+sim$Y <- get_X( sim ) |>
+  linear_combo.population( betas ) |>
+  sim.gaussian( sigmas['residual'] )
+```
+
+### 2.2) Categorical predictor
+
+FORTHCOMING.
+
+```{r}
+# Create data frame for simulated data
+Np <- 100
+sim <- pse( Np )
+sim <-
+  sim %j% intercept( Np ) %j%
+  list( sim.bernoulli( rep( 0.5, Np ) ), 'X.1' )
+
+# Define parameters for simulation
+
+# Intercept and correlation
+betas <- c( 0, .4 )
+# Determine residual standard deviation
+sigmas <- calc.sigma(
+  c( beta_1 = betas[2], var_x = 0.25, R2 = betas[2]^2 ), 'residual'
+)
+
+# Simulate data from outcome
+sim$Y <- get_X( sim ) |>
+  linear_combo.population( betas ) |>
+  sim.gaussian( sigmas['residual'] )
+```
+
+### 2
